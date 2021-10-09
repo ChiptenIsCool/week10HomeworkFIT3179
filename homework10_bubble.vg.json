@@ -1,0 +1,99 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "A dot plot showing each movie in the database, and the difference from the average movie rating. The display is sorted by year to visualize everything in sequential order. The graph is for all Movies before 2019.",
+    "width": 1000,
+    "height": 500,
+    "title": {"text": "Average Price per Bedroom for Top number of Listings in Suburbs", "frame": "group"},
+    "data": {
+      "url": "https://raw.githubusercontent.com/ChiptenIsCool/week10HomeworkFIT3179/main/dtaversion7001.csv"
+    },
+    "params": [
+      {
+        "name": "filter_selection",
+        "bind": {
+          "input": "select",
+          "options": [
+            10,
+            20,
+            30
+          ],
+          "labels": ["Top 10", "Top 20", "Top 30"],
+          "name": "filter selection: "
+        }
+      }
+    ],
+    "transform": [{"filter": "datum.count_rank <= 10 ||datum.count_rank <= filter_selection"}
+    ],
+  
+    "mark": {
+      "type":"point",
+      "filled":true,
+      "color":"red"},
+    "encoding": {
+      "x": {
+        "field": "suburb",
+        "type": "nominal",
+        "sort": {"field": "avgpricepersuburb", "op": "average", "order":"descending"}
+      },
+      "y": {
+        "field": "avgpricepersuburb",
+        "type": "quantitative",
+        "title": "Price"
+      }
+      },
+      "layer": [{
+              "selection": {
+                  "continent_highlight": {
+                      "type": "multi",
+                      "fields": ["annotations_bubble_plot"],
+                      "bind": "legend"
+                  }
+              },
+              "mark": {"type":"circle", "color":"red"},
+              "encoding": {
+                  "size": {"field": "count", "type": "quantitative", "title":"Number of Listings","scale": {
+                          "type": "threshold",
+                          "domain": [300, 600, 800, 1000, 2000],
+                          "range": [500, 1000, 1500, 2000, 2500, 5000]
+                      }},
+                  "tooltip": [
+                      {"field": "suburb", "type": "nominal"},
+                      {"field": "avgpricepersuburb", "type": "quantitative", "format": ",","title":"Average Price per Bedroom"},
+                      {"field": "count", "type": "quantitative", "format": ",","title":"Number of Listings"}
+                  ]
+              }
+          },
+          {
+              "mark": {
+                  "type": "text",
+                  "align": "left",
+                  "baseline": "middle",
+                  "dx": -30,
+                  "dy":-40,
+                  "fontSize": 11.5,
+                  "fontStyle": "italic"
+              },
+              "encoding": {
+                  "text": {
+                      "field": "annotations_bubble_plot",
+                      "type": "nominal"
+                  },
+                  "color": {
+                      "value": "black"
+                  },
+                  "opacity": {
+                      "condition": {
+                          "test": "datum['suburb'] == 'MELBOURNE'  || datum['suburb'] =='RICHMOND' || datum['suburb'] =='SOUTHBANK'",
+                          "value": 1
+                      },
+                      "value": 0
+                  },
+                  "tooltip": [
+                      {"field": "suburb", "type": "nominal"},
+                      {"field": "avgpricepersuburb", "type": "quantitative", "format": ",","title":"Average Price per Bedroom"},
+                      {"field": "count", "type": "quantitative", "format": ",","title":"Number of Listings"}
+                  ]
+              }
+          }
+      ]
+  }
